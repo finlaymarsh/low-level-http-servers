@@ -1,4 +1,4 @@
-package com.fmarsh.server;
+package com.fmarsh.server.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,16 +1,18 @@
 package com.fmarsh.server;
 
+import com.fmarsh.server.model.HttpRequest;
+import com.fmarsh.server.model.HttpResponse;
+import com.fmarsh.server.routing.RouteDefinition;
+import com.fmarsh.server.routing.RouteEngine;
+
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 import java.util.Optional;
 
 public class HttpHandler {
-    private final Map<String, RouteDefinition> routes;
+    private final RouteEngine routeEngine = RouteEngine.getInstance();
 
-    public HttpHandler(final Map<String, RouteDefinition> routes) {
-        this.routes = routes;
-    }
+    public HttpHandler() {}
 
     public void handleConnection(final InputStream inputStream, final OutputStream outputStream) throws IOException {
         try (
@@ -36,10 +38,10 @@ public class HttpHandler {
     }
 
     private void handleRequest(final HttpRequest request, final BufferedWriter bufferedWriter) throws IOException, InvocationTargetException, IllegalAccessException {
-        final String routeKey = request.getHttpMethod().name().concat(request.getUri().getRawPath());
-        if (routes.containsKey(routeKey)) {
-            RouteDefinition routeDefinition = routes.get(routeKey);
-            ResponseWriter.writeResponse(bufferedWriter, (HttpResponse) routeDefinition.method().invoke(routeDefinition.clazz(), request));
+        Optional<RouteDefinition> routeLookupResult = routeEngine.findRouteDefinition(request.getHttpMethod(), request.getUri().getRawPath());
+        if (routeLookupResult.isPresent()) {
+            RouteDefinition routeDefinition = routeLookupResult.get();
+            ResponseWriter.writeResponse(bufferedWriter, (HttpResponse) routeDefinition.method().invoke(routeDefinition.controller(), request));
         } else {
             ResponseWriter.writeResponse(bufferedWriter, new HttpResponse.Builder().withStatusCode(404).withEntity("Route Not Found...").build());
         }

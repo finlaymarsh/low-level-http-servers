@@ -1,5 +1,8 @@
 package com.fmarsh.server;
 
+import com.fmarsh.server.model.HttpMethod;
+import com.fmarsh.server.model.HttpRequest;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

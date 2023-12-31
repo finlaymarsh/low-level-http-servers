@@ -1,4 +1,4 @@
-package com.fmarsh.server;
+package com.fmarsh.server.model;
 
 public class HttpStatusCode {
 

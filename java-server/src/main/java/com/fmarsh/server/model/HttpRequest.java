@@ -1,4 +1,4 @@
-package com.fmarsh.server;
+package com.fmarsh.server.model;
 
 import java.net.URI;
 import java.util.List;

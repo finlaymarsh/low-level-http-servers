@@ -1,4 +1,4 @@
-package com.fmarsh.server;
+package com.fmarsh.server.model;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;

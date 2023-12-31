@@ -1,8 +1,9 @@
-package com.fmarsh.server;
+package com.fmarsh.server.model;
 
 public enum HttpMethod {
     GET,
     PUT,
     POST,
-    PATCH
+    PATCH,
+    DELETE
 }

@@ -1,31 +1,31 @@
 package com.fmarsh.server;
 
+import com.fmarsh.server.annotation.GetMapping;
+import com.fmarsh.server.model.HttpMethod;
+import com.fmarsh.server.routing.RouteDefinition;
+import com.fmarsh.server.routing.RouteEngine;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class Server {
-    private final Map<String, RouteDefinition> routes;
+    private final RouteEngine routeEngine = RouteEngine.getInstance();
     private final ServerSocket socket;
     private final Executor threadPool;
     private HttpHandler handler;
 
     public Server(int port) throws IOException {
-        routes = new HashMap<>();
         threadPool = Executors.newFixedThreadPool(100);
         socket = new ServerSocket(port);
     }
 
-
-
     public void start() throws IOException {
-        handler = new HttpHandler(routes);
+        handler = new HttpHandler();
 
         while (true) {
             Socket clientConnection = socket.accept();
@@ -37,10 +37,7 @@ public class Server {
         for (Method method : clazz.getDeclaredMethods()) {
             if (method.isAnnotationPresent(GetMapping.class)) {
                 try {
-                    routes.put(
-                        HttpMethod.GET.name().concat(method.getAnnotation(GetMapping.class).path()),
-                        new RouteDefinition(clazz.getDeclaredConstructor().newInstance(), method)
-                    );
+                    addRoute(HttpMethod.GET, method.getAnnotation(GetMapping.class).path(), new RouteDefinition(clazz.getDeclaredConstructor().newInstance(), method));
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException ignored) {}
             }
@@ -56,7 +53,7 @@ public class Server {
         threadPool.execute(httpRequestRunner);
     }
 
-    private void addRoute(HttpMethod opCode, String route, RouteDefinition runner) {
-        routes.put(opCode.name().concat(route), runner);
+    private void addRoute(HttpMethod opCode, String route, RouteDefinition routeDefinition) {
+        routeEngine.addRoute(opCode, route, routeDefinition);
     }
 }

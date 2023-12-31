@@ -1,5 +1,8 @@
 package com.fmarsh.server;
 
+import com.fmarsh.server.model.HttpResponse;
+import com.fmarsh.server.model.HttpStatusCode;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
