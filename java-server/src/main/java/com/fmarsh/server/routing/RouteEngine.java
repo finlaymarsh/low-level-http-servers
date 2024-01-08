@@ -59,6 +59,35 @@ public class RouteEngine {
         return Optional.ofNullable(currentNode.getRouteDefinition());
     }
 
+    // Todo restrict routing so that a wildcard value can only appear once
+    // i.e foo/{id1}/{id2} is still legal but foo/{id}/{id} is not
+    public Optional<String> findWildcardMatch(HttpMethod httpMethod, String rawPath, String wildCardValue){
+        GenesisNode genesis = genesisNodeIndex.get(httpMethod);
+        String path = rawPath.startsWith("/") ? rawPath.substring(1) : rawPath;
+        String[] splitPath = path.split("/");
+        Node currentNode = genesis;
+
+        for (String s : splitPath) {
+            if (currentNode.containsChildWithPath(s)) {
+                currentNode = currentNode.getChildWithPath(s);
+                continue;
+            }
+            if (currentNode.getChildren().size() == 1) {
+                Optional<Node> possibleWildcard = currentNode.getChildren().values().stream().findFirst();
+                if (possibleWildcard.isPresent() && possibleWildcard.get().isWildcard()) {
+                    Node wildCardNode = currentNode.getChildren().values().iterator().next();
+                    if (wildCardNode.getPath().equals(String.format("{%s}", wildCardValue))) {
+                        return Optional.of(s);
+                    }
+                    currentNode = wildCardNode;
+                    continue;
+                }
+            }
+            return Optional.empty();
+        }
+        return Optional.empty();
+    }
+
     public Node addRoute(HttpMethod httpMethod, String path, RouteDefinition routeDefinition) {
         Node leaf = createRoute(genesisNodeIndex.get(httpMethod), path, routeDefinition);
         LOGGER.info("Registered route: [{}]", RoutingHelper.getPathFrom(leaf));

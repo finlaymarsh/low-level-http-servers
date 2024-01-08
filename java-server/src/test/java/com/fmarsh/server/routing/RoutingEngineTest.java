@@ -204,5 +204,37 @@ class RoutingEngineTest {
         Node node1 = routeEngine.addRoute(HttpMethod.GET, "/foo/{id1}/test/{id2}", new RouteDefinition("Some random object", null));
         Optional<RouteDefinition> result = routeEngine.findRouteDefinition(HttpMethod.GET, "/foo/this-is-wild/test/something");
         assertTrue(result.isPresent());
-        assertEquals(new RouteDefinition("Some random object", null), result.get());    }
+        assertEquals(new RouteDefinition("Some random object", null), result.get());
+    }
+
+    @Test
+    void findWildCardMatch() {
+        routeEngine.addRoute(HttpMethod.GET, "/foo/{id}", new RouteDefinition("Some random object", null));
+        Optional<String> result = routeEngine.findWildcardMatch(HttpMethod.GET, "/foo/test-value", "id");
+        assertTrue(result.isPresent());
+        assertEquals("test-value", result.get());
+    }
+
+    @Test
+    void findWildCardMatch2() {
+        routeEngine.addRoute(HttpMethod.GET, "/foo/{id}/something-more", new RouteDefinition("Some random object", null));
+        Optional<String> result = routeEngine.findWildcardMatch(HttpMethod.GET, "/foo/test-value/something-more", "id");
+        assertTrue(result.isPresent());
+        assertEquals("test-value", result.get());
+    }
+
+    @Test
+    void findWildCardMatch3() {
+        routeEngine.addRoute(HttpMethod.GET, "/foo/{id1}/{id2}", new RouteDefinition("Some random object", null));
+        Optional<String> result = routeEngine.findWildcardMatch(HttpMethod.GET, "/foo/test-value/something-more", "id2");
+        assertTrue(result.isPresent());
+        assertEquals("something-more", result.get());
+    }
+
+    @Test
+    void findWildCardMatchFails() {
+        routeEngine.addRoute(HttpMethod.GET, "/foo/{id1}/{id2}", new RouteDefinition("Some random object", null));
+        Optional<String> result = routeEngine.findWildcardMatch(HttpMethod.GET, "/foo/test-value/something-more", "id");
+        assertFalse(result.isPresent());
+    }
 }

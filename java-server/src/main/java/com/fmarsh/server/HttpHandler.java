@@ -41,7 +41,7 @@ public class HttpHandler {
         Optional<RouteDefinition> routeLookupResult = routeEngine.findRouteDefinition(request.getHttpMethod(), request.getUri().getRawPath());
         if (routeLookupResult.isPresent()) {
             RouteDefinition routeDefinition = routeLookupResult.get();
-            ResponseWriter.writeResponse(bufferedWriter, (HttpResponse) routeDefinition.method().invoke(routeDefinition.controller(), request));
+            ResponseWriter.writeResponse(bufferedWriter, routeDefinition.invokeMethod(request));
         } else {
             ResponseWriter.writeResponse(bufferedWriter, new HttpResponse.Builder().withStatusCode(404).withEntity("Route Not Found...").build());
         }
