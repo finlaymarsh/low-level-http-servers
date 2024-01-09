@@ -12,4 +12,5 @@ public interface Node {
     Node getChildWithPath(String path);
     boolean containsChildWithPath(String path);
     RouteDefinition getRouteDefinition();
+    void setRouteDefinition(RouteDefinition routeDefinition);
 }

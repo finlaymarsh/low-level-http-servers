@@ -82,6 +82,15 @@ class RoutingEngineTest {
     }
 
     @Test
+    void canRegisterMultipleSimplePaths4() {
+        Node node1 = routeEngine.addRoute(HttpMethod.GET, "/foo/bar", new RouteDefinition(null, null));
+        Node node2 = routeEngine.addRoute(HttpMethod.GET, "/foo", new RouteDefinition(null, null));
+
+        assertEquals("GET /foo/bar", RoutingHelper.getPathFrom(node1));
+        assertEquals("GET /foo", RoutingHelper.getPathFrom(node2));
+    }
+
+    @Test
     void throwsInvalidPathException_when_registeringSamePathTwice() {
         routeEngine.addRoute(HttpMethod.GET, "/foo/bar", new RouteDefinition(null, null));
         Exception exception = assertThrows(DuplicateRouteDefinitionException.class, () ->
@@ -146,6 +155,15 @@ class RoutingEngineTest {
         assertEquals("GET /foo/{id}/test2", RoutingHelper.getPathFrom(node3));
     }
 
+    @Test
+    void canRegisterMultipleComplexPaths2() {
+        Node node2 = routeEngine.addRoute(HttpMethod.GET, "/foo/{id}/test1", new RouteDefinition(null, null));
+        Node node3 = routeEngine.addRoute(HttpMethod.GET, "/foo/{id}/test2", new RouteDefinition(null, null));
+        Node node1 = routeEngine.addRoute(HttpMethod.GET, "/foo/{id}", new RouteDefinition(null, null));
+        assertEquals("GET /foo/{id}", RoutingHelper.getPathFrom(node1));
+        assertEquals("GET /foo/{id}/test1", RoutingHelper.getPathFrom(node2));
+        assertEquals("GET /foo/{id}/test2", RoutingHelper.getPathFrom(node3));
+    }
 
     @Test
     void canFindRouteDefinitionForSimplePath() {

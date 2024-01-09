@@ -10,7 +10,7 @@ public class RouteNode implements Node {
     private final String path;
     private final Map<String, Node> children;
     private final boolean wildcard;
-    private final RouteDefinition routeDefinition;
+    private RouteDefinition routeDefinition;
 
     public RouteNode(Node parent, String path, boolean wildcard) {
         this.parent = parent;
@@ -54,6 +54,11 @@ public class RouteNode implements Node {
     @Override
     public RouteDefinition getRouteDefinition() {
         return routeDefinition;
+    }
+
+    @Override
+    public void setRouteDefinition(RouteDefinition routeDefinition) {
+        this.routeDefinition = routeDefinition;
     }
 
     @Override

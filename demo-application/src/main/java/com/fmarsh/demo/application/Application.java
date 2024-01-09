@@ -8,7 +8,14 @@ public class Application {
 
     public static void main(String[] args) throws IOException {
         Server server = new Server(8080);
-        server.addController(ApplicationController.class);
+
+        // I invision a world where this can all be done in the background
+        server.addClassForAutoInjection(DemoController.class);
+        server.addClassForAutoInjection(DemoService.class);
+        server.addClassForAutoInjection(ResponseBuilder.class);
+        server.instantiateBeans();
+        server.catalogRoutes();
+
         server.start();
     }
 }

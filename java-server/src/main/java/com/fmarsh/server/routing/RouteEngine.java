@@ -115,10 +115,27 @@ public class RouteEngine {
         if (currentNode.containsChildWithPath(path)) {
             // Leaf cannot have conflicting path
             if (routeDefinition != null) {
+
+                Node child = currentNode.getChildWithPath(path);
+                if (!child.isLeaf()) {
+                /*
+                    This catches the edge case where we have registered
+
+                    /foo/bar
+
+                    And we want to register
+
+                    /foo
+                */
+                    child.setRouteDefinition(routeDefinition);
+                    return child;
+                }
+
                 throw new DuplicateRouteDefinitionException(
                     String.format("The route: [%s/%s] is defined multiple times.", RoutingHelper.getPathFrom(currentNode), path)
                 );
             }
+
             return currentNode.getChildWithPath(path);
         }
 

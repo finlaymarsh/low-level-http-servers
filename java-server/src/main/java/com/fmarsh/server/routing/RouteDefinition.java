@@ -31,7 +31,12 @@ public class RouteDefinition {
     }
 
     public HttpResponse invokeMethod(HttpRequest request) throws InvocationTargetException, IllegalAccessException {
-        return (HttpResponse) method.invoke(controller, ParameterAnnotationHelper.sourceParametersFrom(request, parametersDefinitionsForInvocation));
+        try {
+            return (HttpResponse) method.invoke(controller, ParameterAnnotationHelper.sourceParametersFrom(request, parametersDefinitionsForInvocation));
+        } catch (Exception e) {
+            e.getCause().printStackTrace();
+            throw e;
+        }
     }
 
     public Object getController() {
