@@ -1,7 +1,8 @@
 package com.fmarsh.server.routing;
 
+import com.fmarsh.server.annotation.ParameterMetadata;
+import com.fmarsh.server.casting.ParameterCastType;
 import com.fmarsh.server.engine.invocation.MethodInvocationEngine;
-import com.fmarsh.server.annotation.ParameterDefinitionAnnotation;
 import com.fmarsh.server.model.HttpRequest;
 import com.fmarsh.server.model.HttpResponse;
 
@@ -15,7 +16,7 @@ import java.util.Objects;
 public class RouteDefinition {
     private final Object controller;
     private final Method method;
-    private final List<ParameterDefinitionAnnotation<?>> parametersDefinitionsForInvocation = new ArrayList<>();
+    private final List<ParameterMetadata<?>> parametersDefinitionsForInvocation = new ArrayList<>();
 
     public RouteDefinition(Object controller, Method method) {
         this.controller = controller;
@@ -25,16 +26,18 @@ public class RouteDefinition {
             return;
 
         for (Parameter parameter : method.getParameters()) {
-            ParameterDefinitionAnnotation<?> parameterDefinition = MethodInvocationEngine.verifyParameterHasASingleDefinitionAnnotation(parameter);
+            ParameterMetadata<?> parameterDefinition = MethodInvocationEngine.verifyParameterHasASingleDefinitionAnnotation(parameter);
             parametersDefinitionsForInvocation.add(parameterDefinition);
         }
     }
 
     public HttpResponse invokeMethod(HttpRequest request) throws InvocationTargetException, IllegalAccessException {
         try {
-            return (HttpResponse) method.invoke(controller, MethodInvocationEngine.sourceParametersFrom(request, parametersDefinitionsForInvocation));
+            Object[] args = MethodInvocationEngine.sourceParametersFrom(request, parametersDefinitionsForInvocation);
+            return (HttpResponse) method.invoke(controller, args);
         } catch (Exception e) {
-            e.getCause().printStackTrace();
+            if (e.getCause() != null)
+                e.getCause().printStackTrace();
             throw e;
         }
     }

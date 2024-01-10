@@ -34,7 +34,7 @@ public class RouteDefinitionTest {
     @Test
     void testMethodWithSingeParameterAndDuplicateAnnotations() throws Exception {
         ExampleController exampleController = new ExampleController();
-        Method method = getMethodOnExampleControllerWithSignature("parseMethodWithSingleParameterAndDuplicateAnnotations", List.of(HttpRequest.class));
+        Method method = getMethodOnExampleControllerWithSignature("parseMethodWithSingleParameterAndDuplicateAnnotations", List.of(String.class));
         DuplicateParamaterDefinitionAnnotationException exception = assertThrows(DuplicateParamaterDefinitionAnnotationException.class, () -> new RouteDefinition(exampleController, method));
         assertEquals("Duplicate parameter definition annotations detected", exception.getMessage());
     }
@@ -56,7 +56,7 @@ public class RouteDefinitionTest {
         }
 
         @GetMapping(path="/test")
-        public HttpResponse parseMethodWithSingleParameterAndDuplicateAnnotations(@Request @Header("test") HttpRequest request) {
+        public HttpResponse parseMethodWithSingleParameterAndDuplicateAnnotations(@Request @Header("test") String header) {
             return new HttpResponse.Builder().build();
         }
     }

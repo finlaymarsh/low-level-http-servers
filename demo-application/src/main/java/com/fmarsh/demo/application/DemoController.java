@@ -18,6 +18,19 @@ public class DemoController {
         this.responseBuilder = responseBuilder;
     }
 
+    @GetMapping(path="/everything/{id}")
+    public HttpResponse bringingItAllTogether(
+            @Header("test") String testHeader,
+            @Header("show-result") boolean showResultHeader,
+            @PathVariable("id") short id,
+            @QueryParam("num1") int queryParam1,
+            @QueryParam("num2") long queryParam2,
+            @Request HttpRequest request
+    ){
+        String responseBody = demoService.everythingTest(testHeader, showResultHeader, id, queryParam1, queryParam2, request);
+        return responseBuilder.build200Response(responseBody);
+    }
+
     @GetMapping(path="/obi-wan")
     public HttpResponse helloThere() {
         String responseBody = demoService.obiWan();
@@ -50,13 +63,21 @@ public class DemoController {
     }
 
     @GetMapping(path="/header-test-2")
-    public HttpResponse invokeMethodWithHeader(@Header("test") Object testHeaderValue) {
-        return demoService.headerExtraction(testHeaderValue);
+    public HttpResponse invokeMethodWithHeader(@Header("test") String testHeaderValue) {
+        String responseBody = demoService.headerExtraction(testHeaderValue);
+        return responseBuilder.build200Response(responseBody);
     }
 
     @GetMapping(path="/query-param-test")
-    public HttpResponse invokeMethodWithQueryParameter(@QueryParam("test") Object queryParam) {
-        return demoService.queryExtraction(queryParam);
+    public HttpResponse invokeMethodWithQueryParameter(@QueryParam("test") String queryParam) {
+        String responseBody = demoService.queryExtraction(queryParam);
+        return responseBuilder.build200Response(responseBody);
+    }
+
+    @GetMapping(path="/add")
+    public HttpResponse invokeMethodWithQueryParameter(@QueryParam("test1") int queryParam1, @QueryParam("test2") int queryParam2) {
+        String responseBody = demoService.queryExtraction(queryParam1, queryParam2);
+        return responseBuilder.build200Response(responseBody);
     }
 }
 

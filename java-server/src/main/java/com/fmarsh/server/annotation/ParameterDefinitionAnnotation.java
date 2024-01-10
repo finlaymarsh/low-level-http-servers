@@ -1,11 +1,24 @@
 package com.fmarsh.server.annotation;
 
-import java.lang.annotation.Annotation;
+public enum ParameterDefinitionAnnotation {
+    REQUEST(Request.class, false),
+    HEADER(Header.class, true),
+    PATH_VARIABLE(PathVariable.class, true),
+    QUERY_PARAM(QueryParam.class, true);
 
-/**
- * This is the main annotation on a method's parameter, it tells the custom invocation engine how to source a
- * valid argument.
- **/
+    private final Class<?> annotationType;
+    private final boolean needsParsing;
 
-public record ParameterDefinitionAnnotation<T extends Annotation>(T annotation, ParameterDefinitionType parameterType) {
+    ParameterDefinitionAnnotation(Class<?> annotationType, boolean needsParsing) {
+        this.annotationType = annotationType;
+        this.needsParsing = needsParsing;
+    }
+
+    public Class<?> getAnnotationType() {
+        return annotationType;
+    }
+
+    public boolean needsParsing() {
+        return needsParsing;
+    }
 }

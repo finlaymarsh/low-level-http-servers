@@ -1,14 +1,23 @@
 package com.fmarsh.demo.application;
 
-import com.fmarsh.server.model.HttpResponse;
-
-import java.util.List;
+import com.fmarsh.server.model.HttpRequest;
 
 public class DemoService {
     final ResponseBuilder responseBuilder;
 
     public DemoService(ResponseBuilder responseBuilder) {
         this.responseBuilder = responseBuilder;
+    }
+
+    public String everythingTest(String testHeader, boolean showResultHeader, short id, int queryParam1, long queryParam2, HttpRequest request) {
+        String headerResponse = headerExtraction(testHeader);
+        String queryResponse = queryExtraction(queryParam1, (int) queryParam2);
+        if (!showResultHeader) {
+            return "Result hidden\n";
+        }
+        return String.format("{\n\t\"id\": %d\n\t\"path\": %s\n\t\"headerResponse\": %s\t\"queryResponse\": %s}\n",
+                                                        id, request.getUri().getPath(), headerResponse, queryResponse);
+
     }
 
     public String obiWan() {
@@ -31,53 +40,11 @@ public class DemoService {
         return String.format("Request sent with the header \"test\":\"%s\"\n", value);
     }
 
-    public HttpResponse headerExtraction(Object testHeaderValue) {
-        // Todo need much better type conversion for headers
-
-        List<?> value;
-        String firstValue;
-
-        if (testHeaderValue instanceof  List<?> list) {
-            value = list;
-        } else {
-            return responseBuilder.build400Response("Mandatory request header {\"test\"} not present\n");
-        }
-
-        if (value.size() == 0) {
-            return responseBuilder.build400Response("Mandatory request header {\"test\"} cannot be empty\n");
-        }
-
-        if (value.get(0) instanceof String stringValue) {
-            firstValue = stringValue;
-        } else {
-            return responseBuilder.build400Response("Some serialization issue\n");
-
-        }
-        return responseBuilder.build200Response(String.format("Request sent with the header \"test\":\"%s\"\n", firstValue));
+    public String queryExtraction(String queryValue) {
+        return String.format("Request sent with the query parameter \"test\":\"%s\"\n", queryValue);
     }
 
-    public HttpResponse queryExtraction(Object queryValue) {
-        // Todo need much better type conversion for query parameters
-
-        List<?> value;
-        String firstValue;
-
-        if (queryValue instanceof  List<?> list) {
-            value = list;
-        } else {
-            return responseBuilder.build400Response("Mandatory query parameter {\"test\"} not present\n");
-        }
-
-        if (value.size() == 0) {
-            return responseBuilder.build400Response("Mandatory query parameter {\"test\"} cannot be empty\n");
-        }
-
-        if (value.get(0) instanceof String stringValue) {
-            firstValue = stringValue;
-        } else {
-            return responseBuilder.build400Response("Some serialization issue\n");
-
-        }
-        return responseBuilder.build200Response(String.format("Request sent with the query parameter \"test\":\"%s\"\n", firstValue));
+    public String queryExtraction(int queryValue1, int queryValue2) {
+        return String.format("%d + %d = %d\n", queryValue1, queryValue2, queryValue1 + queryValue2);
     }
 }
