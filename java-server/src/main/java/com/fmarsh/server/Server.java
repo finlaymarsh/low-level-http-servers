@@ -61,6 +61,7 @@ public class Server {
 
     public void catalogRoutes() {
         for (Class<?> clazz : beans.keySet()) {
+            // Todo use a lookup table here instead
             if (clazz.isAnnotationPresent(RestController.class)) {
                 for (Method method : clazz.getDeclaredMethods()) {
                     if (method.isAnnotationPresent(GetMapping.class)) {

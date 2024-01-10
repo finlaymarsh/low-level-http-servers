@@ -1,4 +1,4 @@
-package com.fmarsh.server;
+package com.fmarsh.server.decoding;
 
 import com.fmarsh.server.model.HttpMethod;
 import com.fmarsh.server.model.HttpRequest;
@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -60,10 +62,12 @@ public class HttpDecoder {
         }
 
         try {
+            URI uri = new URI(httpInfo[1]);
             return Optional.of(new HttpRequest.Builder()
                     .withHttpMethod(HttpMethod.valueOf(httpInfo[0]))
-                    .withUri(new URI(httpInfo[1]))
+                    .withUri(uri)
                     .withHttpRequestHeaders(decodeRequestHeaders(messages))
+                    .withQueryParameters(decodeRequestQueryParameters(uri))
                     .build());
         } catch (URISyntaxException | IllegalArgumentException e) {
             return Optional.empty();
@@ -94,5 +98,30 @@ public class HttpDecoder {
             }
         }
         return requestHeaders;
+    }
+
+    private static Map<String, List<String>> decodeRequestQueryParameters(final URI uri) {
+        if (uri == null || uri.getQuery() == null || uri.getQuery().isBlank()) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, List<String>> queryParametersMap = new HashMap<>();
+        String queryPathString = uri.getQuery();
+        String[] queryParameters = queryPathString.split("&");
+
+        for (String queryParameter : queryParameters) {
+            int index = queryParameter.indexOf("=");
+            String key = index > 0 ? URLDecoder.decode(queryParameter.substring(0, index), StandardCharsets.UTF_8) : queryParameter;
+            String value = index > 0 && queryParameter.length() > index + 1 ? URLDecoder.decode(queryParameter.substring(index + 1), StandardCharsets.UTF_8) : null;
+            if (queryParametersMap.containsKey(key)) {
+                queryParametersMap.get(key).add(value);
+            } else {
+                List<String> values = new ArrayList<>();
+                values.add(value);
+                queryParametersMap.put(key, values);
+            }
+        }
+
+        return queryParametersMap;
     }
 }

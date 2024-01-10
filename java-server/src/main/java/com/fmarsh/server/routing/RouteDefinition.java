@@ -1,6 +1,6 @@
 package com.fmarsh.server.routing;
 
-import com.fmarsh.server.annotation.ParameterAnnotationHelper;
+import com.fmarsh.server.engine.invocation.MethodInvocationEngine;
 import com.fmarsh.server.annotation.ParameterDefinitionAnnotation;
 import com.fmarsh.server.model.HttpRequest;
 import com.fmarsh.server.model.HttpResponse;
@@ -25,14 +25,14 @@ public class RouteDefinition {
             return;
 
         for (Parameter parameter : method.getParameters()) {
-            ParameterDefinitionAnnotation<?> parameterDefinition = ParameterAnnotationHelper.verifyParameterHasASingleDefinitionAnnotation(parameter);
+            ParameterDefinitionAnnotation<?> parameterDefinition = MethodInvocationEngine.verifyParameterHasASingleDefinitionAnnotation(parameter);
             parametersDefinitionsForInvocation.add(parameterDefinition);
         }
     }
 
     public HttpResponse invokeMethod(HttpRequest request) throws InvocationTargetException, IllegalAccessException {
         try {
-            return (HttpResponse) method.invoke(controller, ParameterAnnotationHelper.sourceParametersFrom(request, parametersDefinitionsForInvocation));
+            return (HttpResponse) method.invoke(controller, MethodInvocationEngine.sourceParametersFrom(request, parametersDefinitionsForInvocation));
         } catch (Exception e) {
             e.getCause().printStackTrace();
             throw e;

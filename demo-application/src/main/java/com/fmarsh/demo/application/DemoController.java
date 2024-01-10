@@ -53,5 +53,10 @@ public class DemoController {
     public HttpResponse invokeMethodWithHeader(@Header("test") Object testHeaderValue) {
         return demoService.headerExtraction(testHeaderValue);
     }
+
+    @GetMapping(path="/query-param-test")
+    public HttpResponse invokeMethodWithQueryParameter(@QueryParam("test") Object queryParam) {
+        return demoService.queryExtraction(queryParam);
+    }
 }
 

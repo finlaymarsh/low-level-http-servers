@@ -3,7 +3,8 @@ package com.fmarsh.server.annotation;
 public enum ParameterDefinitionType {
     REQUEST(Request.class),
     HEADER(Header.class),
-    PATH_VARIABLE(PathVariable.class);
+    PATH_VARIABLE(PathVariable.class),
+    QUERY_PARAM(QueryParam.class);
 
     private final Class<?> parameterType;
 

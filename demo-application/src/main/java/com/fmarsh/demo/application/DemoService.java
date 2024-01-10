@@ -16,7 +16,7 @@ public class DemoService {
     }
 
     public String anakin() {
-        return "Hello There!\n";
+        return "You underestimate my power!\n";
     }
 
     public String dynamicPath1(String dynamicPath) {
@@ -54,5 +54,30 @@ public class DemoService {
 
         }
         return responseBuilder.build200Response(String.format("Request sent with the header \"test\":\"%s\"\n", firstValue));
+    }
+
+    public HttpResponse queryExtraction(Object queryValue) {
+        // Todo need much better type conversion for query parameters
+
+        List<?> value;
+        String firstValue;
+
+        if (queryValue instanceof  List<?> list) {
+            value = list;
+        } else {
+            return responseBuilder.build400Response("Mandatory query parameter {\"test\"} not present\n");
+        }
+
+        if (value.size() == 0) {
+            return responseBuilder.build400Response("Mandatory query parameter {\"test\"} cannot be empty\n");
+        }
+
+        if (value.get(0) instanceof String stringValue) {
+            firstValue = stringValue;
+        } else {
+            return responseBuilder.build400Response("Some serialization issue\n");
+
+        }
+        return responseBuilder.build200Response(String.format("Request sent with the query parameter \"test\":\"%s\"\n", firstValue));
     }
 }

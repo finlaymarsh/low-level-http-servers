@@ -1,5 +1,6 @@
 package com.fmarsh.server;
 
+import com.fmarsh.server.decoding.HttpDecoder;
 import com.fmarsh.server.model.HttpRequest;
 import com.fmarsh.server.model.HttpResponse;
 import com.fmarsh.server.routing.RouteDefinition;

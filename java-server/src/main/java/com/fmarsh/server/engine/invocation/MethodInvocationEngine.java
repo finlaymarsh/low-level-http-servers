@@ -1,5 +1,6 @@
-package com.fmarsh.server.annotation;
+package com.fmarsh.server.engine.invocation;
 
+import com.fmarsh.server.annotation.*;
 import com.fmarsh.server.exception.DuplicateParamaterDefinitionAnnotationException;
 import com.fmarsh.server.exception.NoParamaterDefinitionAnnotationException;
 import com.fmarsh.server.model.HttpRequest;
@@ -10,7 +11,7 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 
 
-public class ParameterAnnotationHelper {
+public class MethodInvocationEngine {
     private static final RouteEngine ROUTE_ENGINE = RouteEngine.getInstance();
 
     /*
@@ -46,17 +47,24 @@ public class ParameterAnnotationHelper {
 
     private static Object sourceParameterFrom(HttpRequest request, ParameterDefinitionAnnotation<?> definition) {
         Object object = null;
-        switch (definition.getParameterType()) {
+        switch (definition.parameterType()) {
             case REQUEST -> object = request;
             case HEADER -> {
-                Header headerAnnotation = (Header) definition.getAnnotation();
+                Header headerAnnotation = (Header) definition.annotation();
                 object = request.getRequestHeaders().get(headerAnnotation.value());
             }
             case PATH_VARIABLE -> {
-                PathVariable pathVariableAnnotation = (PathVariable) definition.getAnnotation();
+                PathVariable pathVariableAnnotation = (PathVariable) definition.annotation();
                 Optional<String> result = ROUTE_ENGINE.findWildcardMatch(request.getHttpMethod(), request.getUri().getRawPath(), pathVariableAnnotation.value());
                 if (result.isPresent()) {
                     object = result.get();
+                }
+            }
+            case QUERY_PARAM -> {
+                QueryParam queryParam = (QueryParam) definition.annotation();
+                Optional<List<String>> param = request.queryParameter(queryParam.value());
+                if (param.isPresent()) {
+                    object = param.get();
                 }
             }
         }

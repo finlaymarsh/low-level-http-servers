@@ -1,18 +1,19 @@
 package com.fmarsh.server.model;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HttpRequest {
     private final HttpMethod httpMethod;
     private final URI uri;
     private final Map<String, List<String>> requestHeaders;
+    private final Map<String, List<String>> queryParameters;
 
-    private HttpRequest(HttpMethod opCode, URI uri, Map<String, List<String>> requestHeaders) {
+    private HttpRequest(HttpMethod opCode, URI uri, Map<String, List<String>> requestHeaders, Map<String, List<String>> queryParameters) {
         this.httpMethod = opCode;
         this.uri = uri;
         this.requestHeaders = requestHeaders;
+        this.queryParameters = queryParameters;
     }
 
     public HttpMethod getHttpMethod() {
@@ -27,10 +28,19 @@ public class HttpRequest {
         return requestHeaders;
     }
 
+    public Map<String, List<String>> getQueryParameters() {
+        return queryParameters;
+    }
+
+    public Optional<List<String>> queryParameter(String key) {
+        return Optional.ofNullable(queryParameters.get(key));
+    }
+
     public static class Builder {
         private HttpMethod httpMethod;
         private URI uri;
-        private Map<String, List<String>> requestHeaders;
+        private Map<String, List<String>> requestHeaders = Collections.emptyMap();
+        private Map<String, List<String>> queryParameters = Collections.emptyMap();
 
         public Builder() {}
 
@@ -49,8 +59,14 @@ public class HttpRequest {
             return this;
         }
 
+        public Builder withQueryParameters(Map<String, List<String>> queryParameters) {
+            this.queryParameters = queryParameters;
+            return this;
+        }
+
+
         public HttpRequest build() {
-            return new HttpRequest(httpMethod, uri, requestHeaders);
+            return new HttpRequest(httpMethod, uri, requestHeaders, queryParameters);
         }
     }
 }
