@@ -37,6 +37,12 @@ public class DemoController {
         return responseBuilder.build200Response(responseBody);
     }
 
+    @DeleteMapping(path="/obi-wan")
+    public HttpResponse deleteTest() {
+        String responseBody = "Delete endpoint hit!\n";
+        return responseBuilder.build200Response(responseBody);
+    }
+
     @GetMapping(path="/anakin")
     public HttpResponse highGround() {
         String responseBody = demoService.anakin();

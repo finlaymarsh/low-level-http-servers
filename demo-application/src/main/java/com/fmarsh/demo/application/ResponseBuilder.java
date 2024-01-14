@@ -12,6 +12,14 @@ public class ResponseBuilder {
                 .build();
     }
 
+    public HttpResponse build204Response(String entity) {
+        return new HttpResponse.Builder()
+                .withStatusCode(204)
+                .withEntity(entity)
+                .addHeader("Content-Type", "text/plain")
+                .build();
+    }
+
     public HttpResponse build400Response(String entity) {
         return new HttpResponse.Builder()
                 .withStatusCode(400)
