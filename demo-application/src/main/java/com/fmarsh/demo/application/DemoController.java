@@ -1,6 +1,8 @@
 package com.fmarsh.demo.application;
 
-import com.fmarsh.server.annotation.*;
+import com.fmarsh.server.annotation.RestController;
+import com.fmarsh.server.annotation.mapping.*;
+import com.fmarsh.server.annotation.parameter.*;
 import com.fmarsh.server.model.HttpRequest;
 import com.fmarsh.server.model.HttpResponse;
 

@@ -1,8 +1,8 @@
 package com.fmarsh.server.routing;
 
-import com.fmarsh.server.annotation.GetMapping;
-import com.fmarsh.server.annotation.Header;
-import com.fmarsh.server.annotation.Request;
+import com.fmarsh.server.annotation.mapping.GetMapping;
+import com.fmarsh.server.annotation.parameter.Header;
+import com.fmarsh.server.annotation.parameter.Request;
 import com.fmarsh.server.exception.DuplicateParamaterDefinitionAnnotationException;
 import com.fmarsh.server.exception.NoParamaterDefinitionAnnotationException;
 import com.fmarsh.server.model.HttpRequest;

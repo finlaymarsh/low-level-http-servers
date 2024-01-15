@@ -1,5 +1,7 @@
 package com.fmarsh.server.annotation;
 
+import com.fmarsh.server.annotation.parameter.*;
+
 public enum ParameterDefinitionAnnotation {
     REQUEST(Request.class, false),
     REQUEST_BODY(RequestBody.class, false),
