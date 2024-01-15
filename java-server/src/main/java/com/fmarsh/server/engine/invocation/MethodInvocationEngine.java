@@ -60,6 +60,7 @@ public class MethodInvocationEngine {
         Object object = null;
         switch (parameterMetadata.parameterDefinitionAnnotation()) {
             case REQUEST -> object = request;
+            case REQUEST_BODY -> object = request.getBody();
             case HEADER -> {
                 Header headerAnnotation = (Header) parameterMetadata.annotation();
                 object = mapParameterToParameterType(request.getRequestHeaders().getOrDefault(headerAnnotation.value(), Collections.emptyList()), parameterMetadata.parameterCastType());

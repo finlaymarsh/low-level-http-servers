@@ -1,6 +1,8 @@
 package com.fmarsh.server;
 
 import com.fmarsh.server.decoding.HttpDecoder;
+import com.fmarsh.server.model.ContentType;
+import com.fmarsh.server.model.HttpHeader;
 import com.fmarsh.server.model.HttpRequest;
 import com.fmarsh.server.model.HttpResponse;
 import com.fmarsh.server.routing.RouteDefinition;
@@ -33,7 +35,7 @@ public class HttpHandler {
         HttpResponse notFoundResponse = new HttpResponse.Builder()
                 .withStatusCode(400)
                 .withEntity("Bad Request...")
-                .addHeader("Content-Type", "text/plain")
+                .addHeader(HttpHeader.CONTENT_TYPE.getValue(), ContentType.TEXT_PLAIN.getValue())
                 .build();
         ResponseWriter.writeResponse(bufferedWriter, notFoundResponse);
     }

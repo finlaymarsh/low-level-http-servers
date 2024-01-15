@@ -9,14 +9,15 @@ public class DemoService {
         this.responseBuilder = responseBuilder;
     }
 
-    public String everythingTest(String testHeader, boolean showResultHeader, short id, int queryParam1, long queryParam2, HttpRequest request) {
+    public String everythingTest(String testHeader, boolean showResultHeader, short id, int queryParam1, long queryParam2,
+                                                                                        String body, HttpRequest request) {
         String headerResponse = headerExtraction(testHeader);
         String queryResponse = queryExtraction(queryParam1, (int) queryParam2);
         if (!showResultHeader) {
             return "Result hidden\n";
         }
-        return String.format("{\n\t\"id\": %d\n\t\"path\": %s\n\t\"headerResponse\": %s\t\"queryResponse\": %s}\n",
-                                                        id, request.getUri().getPath(), headerResponse, queryResponse);
+        return String.format("{\n\t\"id\": %d\n\t\"path\": %s\n\t\"headerResponse\": %s\t\"queryResponse\": %s\t\"body\":\"%s\"\n}\n",
+                                                        id, request.getUri().getPath(), headerResponse, queryResponse, body);
 
     }
 
@@ -46,5 +47,13 @@ public class DemoService {
 
     public String queryExtraction(int queryValue1, int queryValue2) {
         return String.format("%d + %d = %d\n", queryValue1, queryValue2, queryValue1 + queryValue2);
+    }
+
+    public String deleteEndpoint() {
+        return "Delete endpoint hit!\n";
+    }
+
+    public String postEndpoint(String body) {
+        return String.format("Post endpoint hit with body { %s }\n", body);
     }
 }

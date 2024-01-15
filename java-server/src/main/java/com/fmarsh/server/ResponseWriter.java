@@ -1,5 +1,6 @@
 package com.fmarsh.server;
 
+import com.fmarsh.server.model.HttpHeader;
 import com.fmarsh.server.model.HttpResponse;
 import com.fmarsh.server.model.HttpStatusCode;
 
@@ -33,7 +34,7 @@ public class ResponseWriter {
             final Optional<String> entityString = response.getEntity().flatMap(ResponseWriter::getResponseString);
             if (entityString.isPresent()) {
                 final String encodedString = new String(entityString.get().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-                outputStream.write("Content-Length: " + encodedString.getBytes().length + "\n");
+                outputStream.write(HttpHeader.CONTENT_TYPE.getValue() + ": " + encodedString.getBytes().length + "\n");
                 outputStream.write("\n");
                 outputStream.write(encodedString);
             } else {

@@ -2,6 +2,7 @@ package com.fmarsh.server.annotation;
 
 public enum ParameterDefinitionAnnotation {
     REQUEST(Request.class, false),
+    REQUEST_BODY(RequestBody.class, false),
     HEADER(Header.class, true),
     PATH_VARIABLE(PathVariable.class, true),
     QUERY_PARAM(QueryParam.class, true);

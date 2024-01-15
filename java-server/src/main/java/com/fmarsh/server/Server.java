@@ -2,6 +2,7 @@ package com.fmarsh.server;
 
 import com.fmarsh.server.annotation.DeleteMapping;
 import com.fmarsh.server.annotation.GetMapping;
+import com.fmarsh.server.annotation.PostMapping;
 import com.fmarsh.server.annotation.RestController;
 import com.fmarsh.server.engine.injection.DependencyInjector;
 import com.fmarsh.server.model.HttpMethod;
@@ -31,7 +32,6 @@ public class Server {
     private final RouteEngine routeEngine = RouteEngine.getInstance();
     private final ServerSocket socket;
     private final Executor threadPool;
-    private HttpHandler handler;
     private final DependencyInjector dependencyInjector;
     private final Set<Class<?>> classes = new HashSet<>();
 
@@ -45,7 +45,6 @@ public class Server {
     }
 
     public void start() throws IOException {
-        handler = new HttpHandler();
         while (true) {
             Socket clientConnection = socket.accept();
             handleConnection(clientConnection);
@@ -68,6 +67,9 @@ public class Server {
                     if (method.isAnnotationPresent(GetMapping.class)) {
                         addRoute(HttpMethod.GET, method.getAnnotation(GetMapping.class).path(), new RouteDefinition(beans.get(clazz), method));
                     }
+                    if (method.isAnnotationPresent(PostMapping.class)) {
+                        addRoute(HttpMethod.POST, method.getAnnotation(PostMapping.class).path(), new RouteDefinition(beans.get(clazz), method));
+                    }
                     if (method.isAnnotationPresent(DeleteMapping.class)) {
                         addRoute(HttpMethod.DELETE, method.getAnnotation(DeleteMapping.class).path(), new RouteDefinition(beans.get(clazz), method));
                     }
@@ -79,7 +81,8 @@ public class Server {
     private void handleConnection(Socket clientConnection) {
         Runnable httpRequestRunner = () -> {
             try {
-                handler.handleConnection(clientConnection.getInputStream(), clientConnection.getOutputStream());
+                HttpHandler httpHandler = new HttpHandler();
+                httpHandler.handleConnection(clientConnection.getInputStream(), clientConnection.getOutputStream());
             } catch (IOException ignored) {}
         };
         threadPool.execute(httpRequestRunner);

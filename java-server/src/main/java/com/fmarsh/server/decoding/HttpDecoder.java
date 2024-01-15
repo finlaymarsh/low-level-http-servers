@@ -1,5 +1,6 @@
 package com.fmarsh.server.decoding;
 
+import com.fmarsh.server.model.HttpHeader;
 import com.fmarsh.server.model.HttpMethod;
 import com.fmarsh.server.model.HttpRequest;
 
@@ -63,11 +64,15 @@ public class HttpDecoder {
 
         try {
             URI uri = new URI(httpInfo[1]);
+            Map<String, List<String>> requestHeaders = decodeRequestHeaders(messages);
+            String body = decodeRequestBody(messages, requestHeaders);
+            Map<String, List<String>> queryParameters = decodeRequestQueryParameters(uri);
             return Optional.of(new HttpRequest.Builder()
                     .withHttpMethod(HttpMethod.valueOf(httpInfo[0]))
                     .withUri(uri)
-                    .withHttpRequestHeaders(decodeRequestHeaders(messages))
-                    .withQueryParameters(decodeRequestQueryParameters(uri))
+                    .withHttpRequestHeaders(requestHeaders)
+                    .withQueryParameters(queryParameters)
+                    .withBody(body)
                     .build());
         } catch (URISyntaxException | IllegalArgumentException e) {
             return Optional.empty();
@@ -79,14 +84,19 @@ public class HttpDecoder {
         if (messages.size() > 1) {
             for (int i = 1; i < messages.size(); i++) {
                 String header = messages.get(i);
+
+                if (header.isBlank()) {
+                    break;
+                }
+
                 int colonIndex = header.indexOf(":");
 
                 if (!(colonIndex > 0 && header.length() > colonIndex + 1)) {
                     break;
                 }
 
-                String headerName = header.substring(0, colonIndex);
-                String headerValue = header.substring(colonIndex + 1);
+                String headerName = URLDecoder.decode(header.substring(0, colonIndex), StandardCharsets.UTF_8);
+                String headerValue = URLDecoder.decode(header.substring(colonIndex + 1), StandardCharsets.UTF_8);
 
                 if (requestHeaders.containsKey(headerName)) {
                     requestHeaders.get(headerName).add(headerValue);
@@ -98,6 +108,26 @@ public class HttpDecoder {
             }
         }
         return requestHeaders;
+    }
+
+    private static String decodeRequestBody(final List<String> messages, Map<String, List<String>> requestHeaders) {
+        int index = 0;
+        while (index < messages.size() && !messages.get(index).isBlank()) {
+            index++;
+        }
+
+        if (index >= messages.size() - 1) {
+            return "";
+        }
+
+        String rawBody = messages.get(index + 1);
+
+        long contentLength = Long.parseLong(requestHeaders.get(HttpHeader.CONTENT_LENGTH.getValue()).get(0).trim()); // Todo Add better error handling when parsing int
+        if (contentLength != rawBody.length()) {
+            throw new RuntimeException("The length of the body does not match the size specified in Content-Length header"); // Todo better exception
+        }
+
+        return URLDecoder.decode(rawBody, StandardCharsets.UTF_8);
     }
 
     private static Map<String, List<String>> decodeRequestQueryParameters(final URI uri) {
