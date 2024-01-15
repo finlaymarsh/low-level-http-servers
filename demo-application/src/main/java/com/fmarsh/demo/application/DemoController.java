@@ -39,6 +39,16 @@ public class DemoController {
         return responseBuilder.build200Response(demoService.obiWan());
     }
 
+    @PatchMapping(path="/obi-wan")
+    public HttpResponse helloTherePatch() {
+        return responseBuilder.build200Response(demoService.obiWan());
+    }
+
+    @PutMapping(path="/obi-wan")
+    public HttpResponse helloTherePut() {
+        return responseBuilder.build200Response(demoService.obiWan());
+    }
+
     @DeleteMapping(path="/obi-wan")
     public HttpResponse deleteTest() {
         return responseBuilder.build200Response(demoService.deleteEndpoint());

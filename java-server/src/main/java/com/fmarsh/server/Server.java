@@ -1,8 +1,6 @@
 package com.fmarsh.server;
 
-import com.fmarsh.server.annotation.mapping.DeleteMapping;
-import com.fmarsh.server.annotation.mapping.GetMapping;
-import com.fmarsh.server.annotation.mapping.PostMapping;
+import com.fmarsh.server.annotation.mapping.*;
 import com.fmarsh.server.annotation.RestController;
 import com.fmarsh.server.engine.injection.DependencyInjector;
 import com.fmarsh.server.model.HttpMethod;
@@ -72,6 +70,12 @@ public class Server {
                     }
                     if (method.isAnnotationPresent(DeleteMapping.class)) {
                         addRoute(HttpMethod.DELETE, method.getAnnotation(DeleteMapping.class).path(), new RouteDefinition(beans.get(clazz), method));
+                    }
+                    if (method.isAnnotationPresent(PutMapping.class)) {
+                        addRoute(HttpMethod.PUT, method.getAnnotation(PutMapping.class).path(), new RouteDefinition(beans.get(clazz), method));
+                    }
+                    if (method.isAnnotationPresent(PatchMapping.class)) {
+                        addRoute(HttpMethod.PATCH, method.getAnnotation(PatchMapping.class).path(), new RouteDefinition(beans.get(clazz), method));
                     }
                 }
             }
