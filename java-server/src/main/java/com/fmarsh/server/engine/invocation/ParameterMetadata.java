@@ -1,6 +1,7 @@
-package com.fmarsh.server.annotation;
+package com.fmarsh.server.engine.invocation;
 
 import com.fmarsh.server.casting.ParameterCastType;
+import com.fmarsh.server.engine.invocation.ParameterDefinitionAnnotation;
 
 import java.lang.annotation.Annotation;
 

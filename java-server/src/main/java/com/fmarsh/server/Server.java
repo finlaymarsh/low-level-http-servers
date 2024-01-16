@@ -1,7 +1,7 @@
 package com.fmarsh.server;
 
+import com.fmarsh.server.annotation.clazz.RestController;
 import com.fmarsh.server.annotation.mapping.*;
-import com.fmarsh.server.annotation.RestController;
 import com.fmarsh.server.engine.injection.DependencyInjector;
 import com.fmarsh.server.model.HttpMethod;
 import com.fmarsh.server.routing.RouteDefinition;

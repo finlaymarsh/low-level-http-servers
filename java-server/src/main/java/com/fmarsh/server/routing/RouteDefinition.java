@@ -1,7 +1,6 @@
 package com.fmarsh.server.routing;
 
-import com.fmarsh.server.annotation.ParameterMetadata;
-import com.fmarsh.server.casting.ParameterCastType;
+import com.fmarsh.server.engine.invocation.ParameterMetadata;
 import com.fmarsh.server.engine.invocation.MethodInvocationEngine;
 import com.fmarsh.server.model.HttpRequest;
 import com.fmarsh.server.model.HttpResponse;

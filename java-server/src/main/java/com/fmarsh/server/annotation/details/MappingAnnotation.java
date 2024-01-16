@@ -1,6 +1,4 @@
-package com.fmarsh.server.annotation.parameter;
-
-import com.fmarsh.server.annotation.details.ParameterAnnotation;
+package com.fmarsh.server.annotation.details;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,7 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
-@ParameterAnnotation
-public @interface Request {
+@Target(ElementType.TYPE)
+public @interface MappingAnnotation {
 }
