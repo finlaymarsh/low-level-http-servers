@@ -1,26 +1,38 @@
 package com.fmarsh.server.engine.annotation;
 
-import com.fmarsh.server.annotation.details.MappingAnnotation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class AnnotationDetailsEngine {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationDetailsEngine.class);
     private static final String ANNOTATION_DETAILS_PACKAGE = "com.fmarsh.server.annotation";
 
-    public static void main(String[] args) {
-        DirectoryNode directoryNode = new DirectoryNode(ANNOTATION_DETAILS_PACKAGE);
-        directoryNode.explore();
-        directoryNode.getSubDirectories().ifPresent(x -> x.forEach(node -> LOGGER.info(node.getName())));
+    public static Map<Class<?>, Set<Class<?>>> constructAnnotationLookupIndex() {
+        Map<Class<?>, Set<Class<?>>> annotationLookupIndex = new HashMap<>();
 
-        directoryNode.getSubDirectory("details").ifPresent(details -> {
-            details.explore();
-            details.getClasses().ifPresent(x -> x.forEach(clazz -> LOGGER.info(clazz.getSimpleName())));
-        });
+        DirectoryNode annotationNode = new DirectoryNode(ANNOTATION_DETAILS_PACKAGE + ".details");
+        annotationNode.explore();
+        annotationNode.getClasses().ifPresent(classSet -> classSet.forEach(clazz -> annotationLookupIndex.put(clazz, new HashSet<>())));
 
-        directoryNode.getSubDirectory("mapping").ifPresent(details -> {
-            details.explore();
-            details.getClasses().ifPresent(x -> x.forEach(clazz -> LOGGER.info("{} : {}", clazz.getSimpleName(), clazz.isAnnotationPresent(MappingAnnotation.class))));
-        });
+        DirectoryNode rootNode = new DirectoryNode(ANNOTATION_DETAILS_PACKAGE);
+
+        Queue<DirectoryNode> queue = new LinkedList<>();
+        queue.add(rootNode);
+
+        while (!queue.isEmpty()) {
+            DirectoryNode node = queue.remove();
+            if (node.getName().equals("details"))
+                continue;
+            node.explore();
+            node.getClasses().ifPresent(classSet -> classSet.forEach(clazz -> {
+                Arrays.stream(clazz.getAnnotations()).forEach(annnotation -> {
+                    if (annotationLookupIndex.containsKey(annnotation.annotationType())) {
+                        annotationLookupIndex.get(annnotation.annotationType()).add(clazz);
+                    }
+                });
+            }));
+            node.getSubDirectories().ifPresent(queue::addAll);
+        }
+
+        return annotationLookupIndex;
     }
 }

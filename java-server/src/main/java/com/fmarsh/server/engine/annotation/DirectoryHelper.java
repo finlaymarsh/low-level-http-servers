@@ -1,8 +1,5 @@
 package com.fmarsh.server.engine.annotation;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.*;
 import java.util.HashSet;
 import java.util.Optional;
@@ -10,7 +7,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DirectoryHelper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryHelper.class);
     private static final String JAR_LOCATION = AnnotationDetailsEngine.class.getProtectionDomain()
             .getCodeSource()
             .getLocation()
@@ -18,7 +14,6 @@ public class DirectoryHelper {
 
     public static Set<String> findAllFilesInAPackage(String packageName) {
         String packageUrl = packageName.replaceAll("\\.", "/");
-        LOGGER.info(packageUrl);
         try (InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(packageUrl)) {
             assert inputStream != null;
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));

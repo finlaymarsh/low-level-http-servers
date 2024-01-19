@@ -2,6 +2,7 @@ package com.fmarsh.server;
 
 import com.fmarsh.server.annotation.clazz.RestController;
 import com.fmarsh.server.annotation.mapping.*;
+import com.fmarsh.server.engine.annotation.AnnotationDetailsEngine;
 import com.fmarsh.server.engine.injection.DependencyInjector;
 import com.fmarsh.server.model.HttpMethod;
 import com.fmarsh.server.routing.RouteDefinition;
@@ -9,13 +10,11 @@ import com.fmarsh.server.routing.RouteEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,17 +25,22 @@ import java.util.concurrent.Executors;
 
 public class Server {
     private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
+    private static final Map<Class<?>, Set<Class<?>>> ANNOTATION_LOOKUP_INDEX = AnnotationDetailsEngine.constructAnnotationLookupIndex();
 
     private final RouteEngine routeEngine = RouteEngine.getInstance();
     private final ServerSocket socket;
     private final Executor threadPool;
     private final DependencyInjector dependencyInjector;
     private final Set<Class<?>> classes = new HashSet<>();
-
     private Map<Class<?>, Object> beans = new HashMap<>();
 
-    public Server(int port) throws IOException {
+    public Server(int port) throws IOException, URISyntaxException {
+        String dir = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
         printBanner();
+
+        LOGGER.info("current dir = " + dir);
+        LOGGER.info("{}", ANNOTATION_LOOKUP_INDEX);
+
         threadPool = Executors.newFixedThreadPool(100);
         socket = new ServerSocket(port);
         dependencyInjector = new DependencyInjector();
